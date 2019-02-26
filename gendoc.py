@@ -13,11 +13,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-# gendoc.py -- Don't forget to put a reasonable amount code comments
-# in so that we better understand what you're doing when we grade!
-
-# add whatever additional imports you may need here
 def find_sub_directories(folder):
+    '''
+
+    :param folder: take input as folder name
+    :return:
+          returns directory paths and sub directory absolute paths
+    '''
     d_paths = []
     classes = {}
     for paths,dirs,files in os.walk(folder):
@@ -32,6 +34,15 @@ def find_sub_directories(folder):
     return d_paths, classes
    
 def find_all_files(foldername):
+    '''
+
+    :param foldername:
+            takes input as folder name
+    :return:
+         returns dictionary
+         all sub directories names present in the directory mapped to
+        list of files in the sub directories
+    '''
 
     directories, classes = find_sub_directories(foldername)
     class_files={}
@@ -45,6 +56,14 @@ def find_all_files(foldername):
     return class_files
 
 def pre_processing(docs):
+    '''
+
+    :param docs:
+          Take absolute paths of file names list
+    :return:
+        returns list of strings with each element as the text in each document after
+        applying the processing
+    '''
     all_docs = []
     for file in docs:
         f = open(file, encoding="utf-8").readlines()
@@ -56,11 +75,10 @@ def pre_processing(docs):
             s = re.sub(clean, ' ', s)  # Removing HTML tags
             s = re.sub(r'[?|!|\'|"|#]', r'', s)
             s = re.sub(r'[.|,|)|(|\|/]', r' ', s)  # Removing Punctuation
-            s = re.sub("&lt;/?.*?&gt;"," &lt;&gt; ",s)
-    
+            s = re.sub("&lt;/?.*?&gt;"," &lt;&gt; ", s)
             # remove special characters and digits
             s = re.sub("(\\d|\\W)+"," ",s)
-            words_list+=[word for word in s.split()]
+            words_list += [word for word in s.split()]
         filtered_words = [word for word in words_list if word not in nltk.corpus.stopwords.words('english')]
         all_docs.append((docname, ' '.join(filtered_words)))
     return all_docs
@@ -91,12 +109,14 @@ if __name__ == "__main__":
     for c,f in class_files.items():
         all_files+=f
     file_contents = pre_processing(all_files)
+
+    #filenames and their contents separated
+
     filenames = [x[0] for x in file_contents]
     documents = [x[1] for x in file_contents]
     if not args.basedims:
         print("Using full vocabulary.")
-        vectorizer = CountVectorizer(max_features=None) 
-         
+        vectorizer = CountVectorizer(max_features=None)
         count_vector = vectorizer.fit_transform(documents).toarray()
         count_vector_df =  pd.DataFrame(data=count_vector,    
                                         index= filenames,    
@@ -106,7 +126,8 @@ if __name__ == "__main__":
         
     else:
         print("Using only top {} terms by raw count.".format(args.basedims))
-        vectorizer = CountVectorizer(max_features=args.basedims)
+        #use 'max_features' to use the most common words in total vocabulary
+        vectorizer = CountVectorizer(max_features = args.basedims)
         count_vector = vectorizer.fit_transform(documents).toarray()
         count_vector_df =  pd.DataFrame(data=count_vector,
                                         index= filenames,
@@ -130,19 +151,19 @@ if __name__ == "__main__":
         if args.svddims < len(vectorizer.get_feature_names()):
             svdT = TruncatedSVD(n_components=args.svddims)
             svdT_vector = svdT.fit_transform(count_vector)
-            svdT_vector_df =  pd.DataFrame(data= svdT_vector,
-                                        index= filenames,
-                                        columns= [i for i in range(0,args.svddims)])
+            svdT_vector_df =  pd.DataFrame(data = svdT_vector,
+                                           index = filenames,
+                                           columns= [i for i in range(0,args.svddims)])
             svdT_vector_df.to_csv('svdT_countvector'+args.outputfile+'.csv', sep='\t', encoding='utf-8')
         else:
             print('Cannot truncate array as the svd dimensions greater than array columns')
         if args.tfidf:
             if args.svddims < len(tfidfconverter.get_feature_names()):
-                svdT = TruncatedSVD(n_components=args.svddims)
+                svdT = TruncatedSVD(n_components = args.svddims)
                 svdT_vector = svdT.fit_transform(tfidf_vector)
-                svdT_vector_df =  pd.DataFrame(data= svdT_vector,
-                                        index= filenames,
-                                        columns=[i for i in  range(0,args.svddims)])
+                svdT_vector_df =  pd.DataFrame(data = svdT_vector,
+                                               index = filenames,
+                                               columns =[i for i in  range(0,args.svddims)])
                 svdT_vector_df.to_csv('svdT_tfidf'+args.outputfile+'.csv', sep='\t', encoding='utf-8')
  
             else:

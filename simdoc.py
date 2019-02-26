@@ -6,9 +6,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 
-def main():
+def main(file):
+    '''
 
-    df_csv = pd.read_csv(args.vectorfile,sep="\t",index_col=0)
+    :param file:
+          csv file name to read data from
+    :return:
+          None
+    '''
+    df_csv = pd.read_csv(file,sep="\t",index_col=0)
     df_dict = df_csv.to_dict('split')
     new_list = []
     columns = df_dict['columns']
@@ -36,7 +42,16 @@ def main():
 
 
 def print_cosine_similarities(cosine_sim):
+    '''
 
+    :param cosine_sim:
+           dictionary with keys as tuples with classes and
+           values as their vector cosine similarities
+    :return:
+          None
+          prints cosine similarties of input file to an output.txt file
+         prints the same info to console.
+    '''
     f = open('outfile.txt', 'a')
     f.write('\tCosine Values\n')
     print('\tCosine Values\n')
@@ -53,12 +68,6 @@ def print_cosine_similarities(cosine_sim):
 
 if __name__ == "__main__":
 
-
-    # simdoc.py -- Don't forget to put a reasonable amount code comments
-    # in so that we better understand what you're doing when we grade!
-
-    # add whatever additional imports you may need here
-
     parser = argparse.ArgumentParser(description="Compute some similarity statistics.")
     parser.add_argument("vectorfile", type=str,
                     help="The name of the input  file for the matrix data.")
@@ -67,4 +76,4 @@ if __name__ == "__main__":
 
     print("Reading matrix from {}.".format(args.vectorfile))
 
-    main()
+    main(args.vectorfile)
