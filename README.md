@@ -14,9 +14,7 @@ to both console and output.txt file
 ## Results and discussion
 
 ###Vocabulary restriction.
-(Write what you chose for the vocabulary restriction for output file
-(2), you can give a brief impressionistic justification for why in one
-sentence or less.)
+
 Used vocabulary restriction to 20.
 This makes the algorithm use the most common words which has more significance
 in classifying the  documents than the less occurred which are insignificant.
