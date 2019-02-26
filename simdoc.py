@@ -21,7 +21,6 @@ df_dict = df_csv.to_dict('split')
 new_list = []
 columns = df_dict['columns']
 index = [i.split('_')[0] for i in df_dict['index']]
-print(len(index))
 data =  df_dict['data']
 for count,i in enumerate(data):
     new_list.append((index[count],i))
@@ -39,14 +38,18 @@ for i, arr1 in all_class_arrays:
     for j,arr2 in all_class_arrays:
         cs = np.array(cosine_similarity(arr1,arr2))
         all_rows_cs = np.array(cs.mean(axis = 1))
-        print(all_rows_cs)
         final_cosine =  all_rows_cs.mean(axis = 0)
         cosine_sim[(i,j)] = final_cosine
 f = open('outfile.txt', 'a')
 f.write('\tCosine Values\n')
+print('\tCosine Values\n')
 f.write('=========================================================\n')
+print('=========================================================\n')
 f.write('========%s========\n' % (args.vectorfile))
+print('========%s========\n' % (args.vectorfile))
 for key, value in cosine_sim.items():
     f.write('%s\t%s\n' % (key,value))
+    print('%s\t%s\n' % (key,value))
 f.write('========'+'='*len(args.vectorfile)+'========\n' )
+print('========'+'='*len(args.vectorfile)+'========\n' )
 f.close()
