@@ -21,22 +21,32 @@ df_dict = df_csv.to_dict('split')
 new_list = []
 columns = df_dict['columns']
 index = [i.split('_')[0] for i in df_dict['index']]
+print(len(index))
 data =  df_dict['data']
 for count,i in enumerate(data):
     new_list.append((index[count],i))
 class_dict={}
-for i,j in new_list:
-    if i not in class_dict:
-        class_dict[i]=[j]
+for file,vector in new_list:
+    if file  not in class_dict:
+        class_dict[file]=[vector]
     else:
-        class_dict[i]+=j
-for i in class_dict.keys():
-    print(i)  
-
-for i,j in class_dict.items():
-    for l1 in j:
-        for l2 in j:
-            print(l1)
-            print(l2)
-            print(type(l1),len(l1))
-            print(type(l2),len(l2))
+        class_dict[file]+=[vector]
+all_class_arrays=[]
+cosine_sim={}
+for clas,arr in class_dict.items():
+    all_class_arrays.append((clas, np.array(arr)))
+for i, arr1 in all_class_arrays:
+    for j,arr2 in all_class_arrays:
+        cs = np.array(cosine_similarity(arr1,arr2))
+        all_rows_cs = np.array(cs.mean(axis = 1))
+        print(all_rows_cs)
+        final_cosine =  all_rows_cs.mean(axis = 0)
+        cosine_sim[(i,j)] = final_cosine
+f = open('outfile.txt', 'a')
+f.write('\tCosine Values\n')
+f.write('=========================================================\n')
+f.write('========%s========\n' % (args.vectorfile))
+for key, value in cosine_sim.items():
+    f.write('%s\t%s\n' % (key,value))
+f.write('========'+'='*len(args.vectorfile)+'========\n' )
+f.close()
